@@ -8,6 +8,7 @@ public class ExchangeValue {
     private String from;
     private String to;
     private BigDecimal conversionMultiple;
+    private int port;
 
     public ExchangeValue() {
     }
@@ -51,6 +52,14 @@ public class ExchangeValue {
         this.conversionMultiple = conversionMultiple;
     }
 
+    public int getPort() {
+        return port;
+    }
+
+    public void setPort(int port) {
+        this.port = port;
+    }
+
     @Override
     public String toString() {
         return "ExchangeValue{" +
@@ -58,6 +67,7 @@ public class ExchangeValue {
                 ", from='" + from + '\'' +
                 ", to='" + to + '\'' +
                 ", conversionMultiple=" + conversionMultiple +
+                ", port=" + port +
                 '}';
     }
 }
