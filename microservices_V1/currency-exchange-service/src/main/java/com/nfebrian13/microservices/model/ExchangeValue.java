@@ -1,13 +1,28 @@
 package com.nfebrian13.microservices.model;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
 import java.math.BigDecimal;
 
+@Entity(name = "exchange_value")
 public class ExchangeValue {
 
+    @Id
+    @GeneratedValue
     private Long id;
+
+    @Column(name = "currency_from")
     private String from;
+
+    @Column(name = "currency_to")
     private String to;
+
+    @Column(name = "conversion_multiple")
     private BigDecimal conversionMultiple;
+
+    @Column(name = "port")
     private int port;
 
     public ExchangeValue() {
