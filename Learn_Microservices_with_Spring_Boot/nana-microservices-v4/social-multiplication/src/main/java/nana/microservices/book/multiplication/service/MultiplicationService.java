@@ -1,5 +1,7 @@
 package nana.microservices.book.multiplication.service;
 
+import java.util.List;
+
 import nana.microservices.book.multiplication.model.Multiplication;
 import nana.microservices.book.multiplication.model.MultiplicationResultAttempt;
 
@@ -18,4 +20,14 @@ public interface MultiplicationService {
 	 *         otherwise.
 	 */
 	boolean checkAttempt(final MultiplicationResultAttempt resultAttempt);
+
+	/**
+	 * Gets the statistics for a given user.
+	 *
+	 * @param userAlias the user's alias
+	 * @return a list of {@link MultiplicationResultAttempt} objects, being the past
+	 *         attempts of the user.
+	 */
+	List<MultiplicationResultAttempt> getStatsForUser(final String userAlias);
+
 }

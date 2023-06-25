@@ -1,12 +1,28 @@
 package nana.microservices.book.multiplication.model;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+
 /**
  * This class represents a Multiplication (a * b).
  */
+@Entity
 public final class Multiplication {
 
+	@Id
+	@GeneratedValue
+	@Column(name = "MULTIPLICATION_ID")
+	private Long id;
+
+	@Column(name = "FACTOR_A")
 	private int factorA;
+
+	@Column(name = "FACTOR_B")
 	private int factorB;
+
+	@Column(name = "RESULT")
 	private int result;
 
 	public Multiplication() {
@@ -18,6 +34,14 @@ public final class Multiplication {
 		this.factorA = factorA;
 		this.factorB = factorB;
 		this.result = factorA * factorB;
+	}
+
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
 	}
 
 	public int getFactorA() {
