@@ -7,4 +7,4 @@ rabbit MQ sebagai message brokernya.
 
 ## About this version
 
-Springboot social-multiplication app version 1
+Springboot social-multiplication app version 5
