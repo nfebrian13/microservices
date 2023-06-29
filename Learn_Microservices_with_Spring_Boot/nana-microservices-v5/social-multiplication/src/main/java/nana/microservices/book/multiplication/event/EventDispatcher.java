@@ -26,6 +26,9 @@ public class EventDispatcher {
 		this.rabbitTemplate = rabbitTemplate;
 		this.multiplicationExchange = multiplicationExchange;
 		this.multiplicationSolvedRoutingKey = multiplicationSolvedRoutingKey;
+		
+		System.out.println("multiplicationExchange: " + multiplicationExchange);
+		System.out.println("multiplicationSolvedRoutingKey: " + multiplicationSolvedRoutingKey);
 	}
 
 	public void send( MultiplicationSolvedEvent multiplicationSolvedEvent) {
