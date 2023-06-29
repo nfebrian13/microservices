@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -24,11 +25,6 @@ public class MultiplicationResultAttemptController {
 	@Autowired
 	private MultiplicationService multiplicationService;
 
-/*	@PostMapping
-	ResponseEntity<ResultResponse> postResult(@RequestBody MultiplicationResultAttempt multiplicationResultAttempt) {
-		return ResponseEntity.ok(new ResultResponse(multiplicationService.checkAttempt(multiplicationResultAttempt)));
-	} */
-	
     @PostMapping
     ResponseEntity<MultiplicationResultAttempt> postResult(@RequestBody MultiplicationResultAttempt multiplicationResultAttempt) {
         boolean isCorrect = multiplicationService.checkAttempt(multiplicationResultAttempt);
@@ -47,6 +43,12 @@ public class MultiplicationResultAttemptController {
                 multiplicationService.getStatsForUser(alias)
         );
     }
+    
+
+	@GetMapping("/{resultId}")
+	ResponseEntity<MultiplicationResultAttempt> getResultById(@PathVariable("resultId") Long resultId) {
+		return ResponseEntity.ok(multiplicationService.getResultById(resultId));
+	}
 
 
 }

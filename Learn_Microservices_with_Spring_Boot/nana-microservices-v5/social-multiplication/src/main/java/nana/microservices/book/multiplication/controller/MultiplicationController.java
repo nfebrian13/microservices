@@ -13,13 +13,13 @@ import nana.microservices.book.multiplication.service.MultiplicationService;
  */
 @RestController
 @RequestMapping("/multiplications")
-public class MultiplicationController {
+final class MultiplicationController {
 
 	@Autowired
 	private MultiplicationService multiplicationService;
 
 	@GetMapping("/random")
-	public Multiplication getRandomMultiplication() {
+	Multiplication getRandomMultiplication() {
 		return multiplicationService.createRandomMultiplication();
 	}
 
