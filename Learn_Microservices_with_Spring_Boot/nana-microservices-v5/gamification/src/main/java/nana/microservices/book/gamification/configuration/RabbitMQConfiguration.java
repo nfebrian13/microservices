@@ -17,22 +17,31 @@ import org.springframework.messaging.handler.annotation.support.DefaultMessageHa
  */
 @Configuration
 public class RabbitMQConfiguration implements RabbitListenerConfigurer {
+	
+	@Value("${multiplication.exchange}")
+	private String exchangeName;
+	
+	@Value("${multiplication.routing.key}")
+	private String routingKey;
+	
+	@Value("${multiplication.queue}")
+	private String queueName;
 
-	@Bean
-	public TopicExchange multiplicationExchange(@Value("${multiplication.exchange}") String exchangeName) {
+	public TopicExchange multiplicationExchange() {
 		return new TopicExchange(exchangeName);
 	}
-
+	
 	@Bean
-	public Queue gamificationMultiplicationQueue(@Value("${multiplication.queue}") String queueName) {
-		return new Queue(queueName, true);
+	public Queue jsonQueue() {
+		return new Queue(queueName);
 	}
-
+	
 	@Bean
-	Binding binding(Queue queue, TopicExchange exchange,
-			@Value("${multiplication.anything.routing-key}") String routingKey) {
-		return BindingBuilder.bind(queue).to(exchange).with(routingKey);
-	}
+	public Binding jsonBinding() {
+		return BindingBuilder.bind(jsonQueue())
+				.to(multiplicationExchange())
+				.with(routingKey);
+	}	
 
 	@Bean
 	public MappingJackson2MessageConverter consumerJackson2MessageConverter() {

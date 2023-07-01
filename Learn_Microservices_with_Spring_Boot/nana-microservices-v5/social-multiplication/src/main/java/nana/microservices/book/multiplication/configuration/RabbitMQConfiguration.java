@@ -1,5 +1,9 @@
 package nana.microservices.book.multiplication.configuration;
 
+import org.springframework.amqp.core.AmqpTemplate;
+import org.springframework.amqp.core.Binding;
+import org.springframework.amqp.core.BindingBuilder;
+import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.core.TopicExchange;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -14,14 +18,35 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class RabbitMQConfiguration {
 
-	@Bean
-	public TopicExchange multiplicationExchange(@Value("${multiplication.exchange}") final String exchangeName) {
-		return new TopicExchange(exchangeName);
-	}
+	@Value("${multiplication.exchange}")
+	private String exchangeName;
+	
+	@Value("${multiplication.routing.key}")
+	private String routingKey;
+	
+	@Value("${multiplication.queue}")
+	private String queueName;
 
 	@Bean
-	public RabbitTemplate rabbitTemplate(ConnectionFactory connectionFactory) {
-		final RabbitTemplate rabbitTemplate = new RabbitTemplate(connectionFactory);
+	public TopicExchange multiplicationExchange() {
+		return new TopicExchange(exchangeName);
+	}
+	
+	@Bean
+	public Queue jsonQueue() {
+		return new Queue(queueName);
+	}
+	
+	@Bean
+	public Binding jsonBinding() {
+		return BindingBuilder.bind(jsonQueue())
+				.to(multiplicationExchange())
+				.with(routingKey);
+	}	
+
+	@Bean
+	public AmqpTemplate amqpTemplate(ConnectionFactory connectionFactory) {
+		RabbitTemplate rabbitTemplate = new RabbitTemplate(connectionFactory);
 		rabbitTemplate.setMessageConverter(producerJackson2MessageConverter());
 		return rabbitTemplate;
 	}

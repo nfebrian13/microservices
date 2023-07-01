@@ -1,22 +1,30 @@
 package nana.microservices.book.gamification.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import nana.microservices.book.gamification.client.MultiplicationResultAttemptClient;
-import nana.microservices.book.gamification.client.dto.MultiplicationResultAttempt;
-import nana.microservices.book.gamification.domain.GameStats;
-import nana.microservices.book.gamification.repository.BadgeCardRepository;
-import nana.microservices.book.gamification.repository.ScoreCardRepository;
-import nana.microservices.book.gamification.domain.*;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import nana.microservices.book.gamification.client.MultiplicationResultAttemptClient;
+import nana.microservices.book.gamification.client.dto.MultiplicationResultAttempt;
+import nana.microservices.book.gamification.domain.Badge;
+import nana.microservices.book.gamification.domain.BadgeCard;
+import nana.microservices.book.gamification.domain.GameStats;
+import nana.microservices.book.gamification.domain.ScoreCard;
+import nana.microservices.book.gamification.repository.BadgeCardRepository;
+import nana.microservices.book.gamification.repository.ScoreCardRepository;
+
+import javax.transaction.Transactional;
+
 @Service
 class GameServiceImpl implements GameService {
+
+	private static final Logger LOGGER = LoggerFactory.getLogger(GameServiceImpl.class);
 
 	public static final int LUCKY_NUMBER = 42;
 
@@ -29,15 +37,19 @@ class GameServiceImpl implements GameService {
 	@Autowired
 	private MultiplicationResultAttemptClient attemptClient;
 
+	@Transactional
 	@Override
+
 	public GameStats newAttemptForUser(Long userId, Long attemptId, boolean correct) {
 		// For the first version we'll give points only if it's correct
 		if (correct) {
 			ScoreCard scoreCard = new ScoreCard(userId, attemptId);
 			scoreCardRepository.save(scoreCard);
-			System.out.println(
-					"User with id {} scored {} points for attempt id {} " + userId + scoreCard.getScore() + attemptId);
+			
+			LOGGER.info("User with id {} scored {} points for attempt id {} " + userId + scoreCard.getScore() + attemptId);
+			
 			List<BadgeCard> badgeCards = processForBadges(userId, attemptId);
+			
 			return new GameStats(userId, scoreCard.getScore(),
 					badgeCards.stream().map(BadgeCard::getBadge).collect(Collectors.toList()));
 		}
@@ -52,7 +64,7 @@ class GameServiceImpl implements GameService {
 		List<BadgeCard> badgeCards = new ArrayList<>();
 
 		int totalScore = scoreCardRepository.getTotalScoreForUser(userId);
-		System.out.println("New score for user {} is {}" + userId + totalScore);
+		LOGGER.info("New score for user {} is {}" + userId + totalScore);
 
 		List<ScoreCard> scoreCardList = scoreCardRepository.findByUserIdOrderByScoreTimestampDesc(userId);
 		List<BadgeCard> badgeCardList = badgeCardRepository.findByUserIdOrderByBadgeTimestampDesc(userId);
@@ -73,8 +85,11 @@ class GameServiceImpl implements GameService {
 
 		// Lucky number badge
 		MultiplicationResultAttempt attempt = attemptClient.retrieveMultiplicationResultAttemptbyId(attemptId);
-		if (!containsBadge(badgeCardList, Badge.LUCKY_NUMBER) && (LUCKY_NUMBER == attempt.getMultiplicationFactorA()
-				|| LUCKY_NUMBER == attempt.getMultiplicationFactorB())) {
+		
+		if (!containsBadge(badgeCardList, Badge.LUCKY_NUMBER) 
+			&& (LUCKY_NUMBER == attempt.getMultiplicationFactorA()
+			 || LUCKY_NUMBER == attempt.getMultiplicationFactorB())) {
+			
 			BadgeCard luckyNumberBadge = giveBadgeToUser(Badge.LUCKY_NUMBER, userId);
 			badgeCards.add(luckyNumberBadge);
 		}
@@ -113,9 +128,11 @@ class GameServiceImpl implements GameService {
 	 * Assigns a new badge to the given user
 	 */
 	private BadgeCard giveBadgeToUser(Badge badge, Long userId) {
+		
 		BadgeCard badgeCard = new BadgeCard(userId, badge);
 		badgeCardRepository.save(badgeCard);
-		System.out.println("User with id {} won a new badge: {}" + userId + badge);
+		
+		LOGGER.info("User with id {} won a new badge: {}" + userId + badge);
 		return badgeCard;
 	}
 }

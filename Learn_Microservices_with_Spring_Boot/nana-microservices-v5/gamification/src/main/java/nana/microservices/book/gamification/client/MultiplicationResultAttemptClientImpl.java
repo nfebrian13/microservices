@@ -14,16 +14,12 @@ import nana.microservices.book.gamification.client.dto.MultiplicationResultAttem
 @Component
 class MultiplicationResultAttemptClientImpl implements MultiplicationResultAttemptClient {
 
-	private final RestTemplate restTemplate;
-	private final String multiplicationHost;
-
 	@Autowired
-	public MultiplicationResultAttemptClientImpl(RestTemplate restTemplate,
-			@Value("${multiplicationHost}") String multiplicationHost) {
-		this.restTemplate = restTemplate;
-		this.multiplicationHost = multiplicationHost;
-	}
+	private RestTemplate restTemplate;
 
+	@Value("${multiplicationHost}")
+	private String multiplicationHost;
+	
 	@Override
 	public MultiplicationResultAttempt retrieveMultiplicationResultAttemptbyId(Long multiplicationResultAttemptId) {
 		return restTemplate.getForObject(multiplicationHost + "/results/" + multiplicationResultAttemptId,
